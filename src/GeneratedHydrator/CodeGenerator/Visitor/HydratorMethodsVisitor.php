@@ -106,13 +106,14 @@ class HydratorMethodsVisitor extends NodeVisitorAbstract
         $propertyName = $property->name;
         $escapedName  = var_export($propertyName, true);
 
+        // Hydrate Null if property not present in Haystack
         if ($property->allowsNull && ! $property->hasDefault) {
             return ['$object->' . $propertyName . ' = ' . $inputArrayName . '[' . $escapedName . '] ?? '. '$object->' . $propertyName .' ?? null;'];
         }
-
+        
+        // Hydrate property if present in the haystack
         return [
             'if (isset(' . $inputArrayName . '[' . $escapedName . '])',
-            '    || $object->' . $propertyName . ' !== null && \\array_key_exists(' . $escapedName . ', ' . $inputArrayName . ')',
             ') {',
             '    $object->' . $propertyName . ' = ' . $inputArrayName . '[' . $escapedName . '];',
             '}',
